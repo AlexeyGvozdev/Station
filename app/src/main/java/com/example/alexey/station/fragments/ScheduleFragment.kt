@@ -4,13 +4,19 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.app.Fragment
+import android.content.res.AssetManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
 import com.example.alexey.station.R
+import com.example.alexey.station.model.DataAboutStations
 import kotlinx.android.synthetic.main.fragment_schedule.*
+import com.google.gson.Gson
+
+
 
 /**
  * A simple [Fragment] subclass.
@@ -36,13 +42,22 @@ class ScheduleFragment : Fragment() {
         }
     }
 
+
+
+    val TAG = "MYTAG"
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_schedule, container, false)
 
         val tv_schedule = view.findViewById<TextView>(R.id.tv_schedule)
-        tv_schedule.text = "Hello on schedule"
+        val strJSON = arguments.getString("JSON")
+        Log.d(TAG, strJSON.length.toString())
+        tv_schedule.text = strJSON.subSequence(0,150)
+        val gson = Gson()
+        val dataAboutStations = gson.fromJson(strJSON, DataAboutStations::class.java)
+//        Log.d(TAG, dataAboutStations.toString())
 
         return view
     }

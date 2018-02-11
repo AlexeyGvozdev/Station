@@ -12,8 +12,15 @@ import com.example.alexey.station.fragments.AboutApp
 import com.example.alexey.station.fragments.ScheduleFragment
 import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
+import android.app.Activity
+import android.util.Log
+import java.io.IOException
+import java.io.InputStream
+
 
 class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    val TAG = "MYTAG"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +34,18 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        nav_view.menu.getItem(0).isChecked = true
+        onNavigationItemSelected(nav_view.menu.getItem(0))
+
+//        val start = System.currentTimeMillis()
+//// поиск смысла жизни ...
+//        val finish = System.currentTimeMillis()
+//        Log.d(TAG, getStringFromAssetFile().subSequence(0,20).toString())
+//        val timeConsumedMillis = finish - start
+//        Log.d(TAG, timeConsumedMillis.toString())
+
+
+
     }
 
     override fun onBackPressed() {
@@ -58,18 +77,43 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val fTran = fragmentManager.beginTransaction()
-        val fragment : Fragment = when (item.itemId) {
+        val fragment : Fragment
+        when (item.itemId) {
             R.id.schedule -> {
-                ScheduleFragment()
+                fragment = ScheduleFragment()
+                val bundle = Bundle()
+                bundle.putString("JSON", getStringFromAssetFile())
+                fragment.arguments = bundle
+
             }
             else -> {
-                AboutApp()
+                fragment = AboutApp()
             }
         }
         fTran.replace(R.id.my_container, fragment).commit()
-        setTitle(item.toString())
+        title = item.toString()
+        Log.d(TAG, item.toString() + " : " + title)
+
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun getStringFromAssetFile(): String {
+        val text = "allStations.json"
+        var buffer: ByteArray? = null
+        val inputStream: InputStream
+        try {
+            inputStream = assets.open(text)
+            val size = inputStream.available()
+            buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+
+        return String(buffer!!)
     }
 }
