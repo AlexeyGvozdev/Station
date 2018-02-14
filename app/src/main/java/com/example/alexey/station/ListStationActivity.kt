@@ -69,7 +69,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         val intentFromFragment = intent
         requestCodeFromFragment = intentFromFragment.getIntExtra(REQUEST_CODE_STRING,0)
 
-        Observable.fromCallable(CallableLongAction(getStringFromAssetFile()))
+        Observable.fromCallable { parseSTRJSON(getStringFromAssetFile()) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -89,18 +89,10 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
         when (requestCodeFromFragment) {
             REQUEST_CODE_STATION_FROM -> {
-                for (city in data.citiesFrom) {
-                    for(station in city.stations) {
-                        listStations.add(station)
-                    }
-                }
+                data.citiesFrom.flatMapTo(listStations) { it.stations }
             }
             REQUEST_CODE_STATION_IN -> {
-                for (city in data.citiesTo) {
-                    for(station in city.stations) {
-                        listStations.add(station)
-                    }
-                }
+                data.citiesTo.flatMapTo(listStations) { it.stations }
             }
         }
 
@@ -178,12 +170,6 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         const val SELECTED_STATION = "SelectedStation"
     }
 
-    internal inner class CallableLongAction(private val data: String) : Callable<DataAboutStations> {
-        @Throws(Exception::class)
-        override fun call(): DataAboutStations {
-            return parseSTRJSON(data)
-        }
-    }
 
     private fun parseSTRJSON(strJSON: String): DataAboutStations {
         val index = strJSON.indexOf("\"citiesTo\"")
