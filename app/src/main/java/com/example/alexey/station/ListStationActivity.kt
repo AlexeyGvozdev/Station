@@ -7,18 +7,38 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.example.alexey.station.model.DataAboutStations
+import com.example.alexey.station.model.Station
 import com.google.gson.Gson
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_list_station.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
+import kotlinx.android.synthetic.main.content_list_station.*
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.Callable
+import kotlin.collections.ArrayList
 
 class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private val adapter = MyAdapter(){
+        returnSelectedStation(it)
+    }
+
+    private fun returnSelectedStation(station: Station) {
+        val intent = Intent()
+        intent.putExtra(SELECTED_STATION, station.stationTitle)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
 
     val TAG = "MYTAG"
     var requestCodeFromFragment: Int = 0
@@ -32,32 +52,60 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-        var strJSON: String = ""
-        strJSON = getStringFromAssetFile()
 
 
-        val index = strJSON.indexOf("\"citiesTo\"")
-        Log.d(TAG, strJSON.subSequence(index, index+10).toString())
 
-        val gson = Gson()
-//        val data: DataAboutStations = gson.fromJson(strJSON,DataAboutStations::class.java)
+        nav_view.setNavigationItemSelectedListener(this)
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+
+        recycler_view.adapter = adapter
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.setHasFixedSize(true)
 
         val intentFromFragment = intent
         requestCodeFromFragment = intentFromFragment.getIntExtra(REQUEST_CODE_STRING,0)
-        val intent = Intent()
+
+        Observable.fromCallable(CallableLongAction(getStringFromAssetFile()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { fillRecyclerView(it)},
+                        { onEror(it)}
+                )
+
+    }
+
+    private fun onEror(err: Throwable?) {
+        Log.d(TAG, err.toString())
+    }
+
+    private fun fillRecyclerView(data: DataAboutStations?) {
+        val listStations : ArrayList<Station> = ArrayList<Station>()
+        if(data == null ) return
+
         when (requestCodeFromFragment) {
             REQUEST_CODE_STATION_FROM -> {
-                intent.putExtra(SELECTED_STATION, "this station")
-                setResult(Activity.RESULT_OK, intent)
+                for (city in data.citiesFrom) {
+                    for(station in city.stations) {
+                        listStations.add(station)
+                    }
+                }
             }
             REQUEST_CODE_STATION_IN -> {
-                intent.putExtra(SELECTED_STATION, "this station")
-                setResult(Activity.RESULT_OK, intent)
+                for (city in data.citiesTo) {
+                    for(station in city.stations) {
+                        listStations.add(station)
+                    }
+                }
             }
         }
-        nav_view.setNavigationItemSelectedListener(this)
-        finish()
+
+        adapter.setListStations(listStations)
+        progress.visibility = View.GONE
     }
 
     override fun onBackPressed() {
@@ -86,7 +134,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        var intent: Intent = when (item.itemId) {
+        val intent: Intent = when (item.itemId) {
             R.id.schedule -> {
                 Intent(this, MenuActivity::class.java)
             }
@@ -94,7 +142,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
                 Intent(this, MenuActivity::class.java)
             }
         }
-        var resultCode: Int = when (item.itemId) {
+        val resultCode: Int = when (item.itemId) {
             R.id.schedule -> 0
             else -> 1
         }
@@ -119,16 +167,29 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
             e.printStackTrace()
         }
 
-
         return String(buffer!!)
     }
 
     companion object {
-        val REQUEST_CODE_STRING = "RequestCode"
-        val REQUEST_CODE_STATION_IN = 2
-        val REQUEST_CODE_STATION_FROM = 1
-        val NUMBER_ELEMENT_MENU_NAV = "NumberElementMenuNav"
-        val SELECTED_STATION = "SelectedStation"
+        const val REQUEST_CODE_STRING = "RequestCode"
+        const val REQUEST_CODE_STATION_IN = 2
+        const val REQUEST_CODE_STATION_FROM = 1
+        const val NUMBER_ELEMENT_MENU_NAV = "NumberElementMenuNav"
+        const val SELECTED_STATION = "SelectedStation"
+    }
+
+    internal inner class CallableLongAction(private val data: String) : Callable<DataAboutStations> {
+        @Throws(Exception::class)
+        override fun call(): DataAboutStations {
+            return parseSTRJSON(data)
+        }
+    }
+
+    private fun parseSTRJSON(strJSON: String): DataAboutStations {
+        val index = strJSON.indexOf("\"citiesTo\"")
+        Log.d(TAG, strJSON.subSequence(index, index+10).toString())
+        val gson = Gson()
+        return gson.fromJson(strJSON,DataAboutStations::class.java)
     }
 }
 
