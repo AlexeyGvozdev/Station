@@ -1,31 +1,30 @@
 package com.example.alexey.station
 
-import android.app.Fragment
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.example.alexey.station.fragments.AboutApp
-import com.example.alexey.station.fragments.ScheduleFragment
-import kotlinx.android.synthetic.main.activity_menu.*
+import com.example.alexey.station.model.DataAboutStations
+import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_list_station.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
-import android.util.Log
 import java.io.IOException
 import java.io.InputStream
-import com.example.alexey.station.ListStationActivity.Companion.NUMBER_ELEMENT_MENU_NAV
+import java.util.*
 
-
-class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     val TAG = "MYTAG"
-
+    var requestCodeFromFragment: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu)
-//        setSupportActionBar(toolbar)
+        setContentView(R.layout.activity_list_station)
 
 
         val toggle = ActionBarDrawerToggle(
@@ -33,22 +32,32 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
+        var strJSON: String = ""
+        strJSON = getStringFromAssetFile()
+
+
+        val index = strJSON.indexOf("\"citiesTo\"")
+        Log.d(TAG, strJSON.subSequence(index, index+10).toString())
+
+        val gson = Gson()
+//        val data: DataAboutStations = gson.fromJson(strJSON,DataAboutStations::class.java)
+
+
+        val intentFromFragment = intent
+        requestCodeFromFragment = intentFromFragment.getIntExtra(REQUEST_CODE_STRING,0)
+        val intent = Intent()
+        when (requestCodeFromFragment) {
+            REQUEST_CODE_STATION_FROM -> {
+                intent.putExtra(SELECTED_STATION, "this station")
+                setResult(Activity.RESULT_OK, intent)
+            }
+            REQUEST_CODE_STATION_IN -> {
+                intent.putExtra(SELECTED_STATION, "this station")
+                setResult(Activity.RESULT_OK, intent)
+            }
+        }
         nav_view.setNavigationItemSelectedListener(this)
-
-        val resultFromListStationActivity = intent.getIntExtra(NUMBER_ELEMENT_MENU_NAV, 0)
-
-        nav_view.menu.getItem(resultFromListStationActivity).isChecked = true
-        onNavigationItemSelected(nav_view.menu.getItem(resultFromListStationActivity))
-
-//        val start = System.currentTimeMillis()
-//// поиск смысла жизни ...
-//        val finish = System.currentTimeMillis()
-//        Log.d(TAG, getStringFromAssetFile().subSequence(0,20).toString())
-//        val timeConsumedMillis = finish - start
-//        Log.d(TAG, timeConsumedMillis.toString())
-
-
-
+        finish()
     }
 
     override fun onBackPressed() {
@@ -61,7 +70,7 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu, menu)
+        menuInflater.inflate(R.menu.list_station, menu)
         return true
     }
 
@@ -77,26 +86,20 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-
-
-        val fTran = fragmentManager.beginTransaction()
-        val fragment : Fragment
-        when (item.itemId) {
+        var intent: Intent = when (item.itemId) {
             R.id.schedule -> {
-                fragment = ScheduleFragment()
-                val bundle = Bundle()
-                bundle.putString("JSON", getStringFromAssetFile())
-                fragment.arguments = bundle
-
+                Intent(this, MenuActivity::class.java)
             }
             else -> {
-                fragment = AboutApp()
+                Intent(this, MenuActivity::class.java)
             }
         }
-        fTran.replace(R.id.my_container, fragment).commit()
-        title = item.toString()
-        Log.d(TAG, item.toString() + " : " + title)
-
+        var resultCode: Int = when (item.itemId) {
+            R.id.schedule -> 0
+            else -> 1
+        }
+        intent.putExtra(NUMBER_ELEMENT_MENU_NAV, resultCode)
+        startActivity(intent)
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
@@ -119,4 +122,13 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         return String(buffer!!)
     }
+
+    companion object {
+        val REQUEST_CODE_STRING = "RequestCode"
+        val REQUEST_CODE_STATION_IN = 2
+        val REQUEST_CODE_STATION_FROM = 1
+        val NUMBER_ELEMENT_MENU_NAV = "NumberElementMenuNav"
+        val SELECTED_STATION = "SelectedStation"
+    }
 }
+

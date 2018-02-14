@@ -1,46 +1,26 @@
 package com.example.alexey.station.fragments
 
-import android.content.Context
-import android.net.Uri
+
+import android.app.Activity
 import android.os.Bundle
 import android.app.Fragment
-import android.content.res.AssetManager
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import com.example.alexey.station.ListStationActivity
+import com.example.alexey.station.ListStationActivity.Companion.SELECTED_STATION
+import com.example.alexey.station.ListStationActivity.Companion.REQUEST_CODE_STATION_FROM
+import com.example.alexey.station.ListStationActivity.Companion.REQUEST_CODE_STATION_IN
+import com.example.alexey.station.ListStationActivity.Companion.REQUEST_CODE_STRING
 
 import com.example.alexey.station.R
-import com.example.alexey.station.model.DataAboutStations
 import kotlinx.android.synthetic.main.fragment_schedule.*
-import com.google.gson.Gson
 
 
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ScheduleFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ScheduleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ScheduleFragment : Fragment() {
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
-    }
 
 
 
@@ -51,74 +31,45 @@ class ScheduleFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_schedule, container, false)
 
-        val tv_schedule = view.findViewById<TextView>(R.id.tv_schedule)
-        val strJSON = arguments.getString("JSON")
-        Log.d(TAG, strJSON.length.toString())
-        tv_schedule.text = strJSON.subSequence(0,150)
-        val gson = Gson()
-        val dataAboutStations = gson.fromJson(strJSON, DataAboutStations::class.java)
-//        Log.d(TAG, dataAboutStations.toString())
+
+        val btn_choose_station_from = view.findViewById<View>(R.id.btn_choose_station_from)
+        val btn_choose_station_in = view.findViewById<View>(R.id.btn_choose_station_in)
+        btn_choose_station_from.setOnClickListener( { openListStationActivity(REQUEST_CODE_STATION_FROM) } )
+        btn_choose_station_in.setOnClickListener( { openListStationActivity(REQUEST_CODE_STATION_IN) } )
 
         return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        val selectedStation: String
+        if (resultCode == Activity.RESULT_OK) {
+            selectedStation = intent?.getStringExtra(SELECTED_STATION) ?: ""
+
+            if (!selectedStation.isEmpty()) {
+                when (requestCode) {
+                    REQUEST_CODE_STATION_FROM -> {
+                        tv_station_from.text = selectedStation
+                        tv_station_from.visibility = View.VISIBLE
+                    }
+                    REQUEST_CODE_STATION_IN -> {
+                        tv_station_in.text = selectedStation
+                        tv_station_in.visibility = View.VISIBLE
+                    }
+                }
+            }
         }
+
+
+
     }
 
-//    override fun onAttach(context: Context?) {
-//        super.onAttach(context)
-//        if (context is OnFragmentInteractionListener) {
-//            mListener = context
-//        } else {
-//            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-//        }
-//    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
+    private fun openListStationActivity(requestCode: Int) {
+        val intent = Intent(activity, ListStationActivity::class.java)
+        intent.putExtra(REQUEST_CODE_STRING, requestCode)
+        startActivityForResult(intent, requestCode)
+//        activity.startActivityFromFragment(ScheduleFragment(), intent,1)
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ScheduleFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): ScheduleFragment {
-            val fragment = ScheduleFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
-            return fragment
-        }
-    }
-}// Required empty public constructor
+}

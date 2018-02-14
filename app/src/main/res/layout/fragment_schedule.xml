@@ -1,14 +1,55 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="15dp"
     tools:context="com.example.alexey.station.fragments.ScheduleFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tv_schedule"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/btn_choose_station_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Выбрать станцию отправления"
+        />
+
+    <Button
+        android:id="@+id/btn_choose_station_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_station_from"
+        android:text="Выбрать станцию прибытия"/>
+
+    <Button
+        android:id="@+id/btn_choose_date"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/tv_station_in"
+        android:layout_height="wrap_content"
+        android:text="Выбрать дату отправления"/>
+
+    <TextView
+        android:id="@+id/tv_station_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:visibility="gone"
+        android:layout_below="@id/btn_choose_station_from"/>
+
+    <TextView
+        android:id="@+id/tv_station_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:visibility="gone"
+        android:layout_below="@id/btn_choose_station_in"/>
+
+    <TextView
+        android:id="@+id/tv_station_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:visibility="gone"
+        android:layout_below="@id/btn_choose_date"/>
+
+</RelativeLayout>
