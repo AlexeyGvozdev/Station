@@ -6,7 +6,17 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.alexey.station.ListStationActivity"
-    tools:showIn="@layout/app_bar_list_station">
+    tools:showIn="@layout/app_bar_list_station"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
+
+    <EditText
+        android:id="@+id/et_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:hint="Поиск станции"
+        android:textSize="20sp"/>
 
     <ProgressBar
         android:id="@+id/progress"
@@ -19,6 +29,7 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item"/>
+        android:layout_below="@+id/et_search"
+        tools:listitem="@layout/item" />
 
 </RelativeLayout>
