@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.example.alexey.station.model.DataAboutStations
 import com.example.alexey.station.model.Station
 import com.google.gson.Gson
@@ -29,8 +30,13 @@ import kotlin.collections.ArrayList
 
 class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val adapter = MyAdapter(){
-        returnSelectedStation(it)
+    private val adapter = MyAdapter(
+            { returnSelectedStation(it) },
+            { showInformationAboutStation(it) }
+    )
+
+    private fun showInformationAboutStation(station: Station) {
+        Toast.makeText(this, station.stationTitle, Toast.LENGTH_SHORT).show()
     }
 
     private fun returnSelectedStation(station: Station) {

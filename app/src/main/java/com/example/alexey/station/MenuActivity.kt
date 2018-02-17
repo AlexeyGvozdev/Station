@@ -16,6 +16,7 @@ import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import com.example.alexey.station.ListStationActivity.Companion.NUMBER_ELEMENT_MENU_NAV
+import com.example.alexey.station.fragments.ScheduleFragment.Companion.TAG_SCHEDULE_FRAGMENT
 
 
 class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -81,19 +82,23 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val fTran = fragmentManager.beginTransaction()
         val fragment : Fragment
+        var tagFragment: String = ""
         when (item.itemId) {
             R.id.schedule -> {
                 fragment = ScheduleFragment()
                 val bundle = Bundle()
                 bundle.putString("JSON", getStringFromAssetFile())
                 fragment.arguments = bundle
+                tagFragment = TAG_SCHEDULE_FRAGMENT
+
 
             }
             else -> {
                 fragment = AboutApp()
+                tagFragment = "AboutApp"
             }
         }
-        fTran.replace(R.id.my_container, fragment).commit()
+        fTran.replace(R.id.my_container, fragment, tagFragment).commit()
         title = item.toString()
         Log.d(TAG, item.toString() + " : " + title)
 

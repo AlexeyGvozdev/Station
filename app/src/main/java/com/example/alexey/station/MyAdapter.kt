@@ -5,15 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.alexey.station.model.Cities
 import com.example.alexey.station.model.Station
 
 /**
  * Created by alexey on 14.02.18.
  */
-class MyAdapter(private val listener: (Station) -> Unit) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+class MyAdapter(private val listener: (Station) -> Unit,
+                private val longListener: (Station) -> Unit) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
 
+    private lateinit var onclicklistener : View.OnClickListener
     private var listStations: List<Station> = emptyList()
 
     fun setListStations(list: List<Station>) {
@@ -29,11 +30,13 @@ class MyAdapter(private val listener: (Station) -> Unit) : RecyclerView.Adapter<
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.item, parent, false)
-        return ViewHolder(view, listener)
+        return ViewHolder(view, listener, longListener)
     }
 
 
-    class ViewHolder(itemView: View, private val listener: (Station) -> Unit) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View,
+                     private val listener: (Station) -> Unit,
+                     private val longListener: (Station) -> Unit) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tv_name_station)
         val tvCountry: TextView = itemView.findViewById(R.id.tv_country_station)
         val tvCity: TextView = itemView.findViewById(R.id.tv_city_title_station)
@@ -42,7 +45,11 @@ class MyAdapter(private val listener: (Station) -> Unit) : RecyclerView.Adapter<
             tvName.text = station.stationTitle
             tvCountry.text = station.countryTitle
             tvCity.text = station.cityTitle
-            itemView.setOnClickListener( { listener(station) })
+            itemView.setOnClickListener( { listener(station) } )
+            itemView.setOnLongClickListener {
+                longListener(station)
+                true
+            }
         }
 
     }
