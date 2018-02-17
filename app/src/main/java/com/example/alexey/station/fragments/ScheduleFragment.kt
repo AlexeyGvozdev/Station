@@ -42,16 +42,14 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         btn_choose_station_in.setOnClickListener( { openListStationActivity(REQUEST_CODE_STATION_IN) } )
         btn_choose_date.setOnClickListener { showDatePickerDialog() }
         Log.d(TAG, "onCreateView")
-        var text: String = savedInstanceState?.getCharSequence(KEY_STATION_IN)?.toString() ?: ""
-//        if(text.isNotEmpty()) setTextAndShow(tv_station_in, text)
 
-        Log.d(TAG, text + " : " + "" + text.length)
         retainInstance = true
         return view
     }
 
     private fun showDatePickerDialog() {
         val dialogFragment = DatePickerFragment()
+        dialogFragment.setTargetFragment(this, 3)
         dialogFragment.show(fragmentManager, "dialog")
     }
 
@@ -105,8 +103,16 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         super.onSaveInstanceState(outState)
     }
 
-//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-//        super.onViewStateRestored(savedInstanceState)
-//
-//    }
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        var text: String = savedInstanceState?.getCharSequence(KEY_STATION_IN)?.toString() ?: ""
+        if(text.isNotEmpty()) setTextAndShow(tv_station_in, text)
+        text = savedInstanceState?.getCharSequence(KEY_STATION_FROM)?.toString() ?: ""
+        if(text.isNotEmpty()) setTextAndShow(tv_station_from, text)
+        text = savedInstanceState?.getCharSequence(KEY_DATE)?.toString() ?: ""
+        if(text.isNotEmpty()) setTextAndShow(tv_station_date, text)
+
+        Log.d(TAG, text + " : " + "" + text.length)
+
+    }
 }

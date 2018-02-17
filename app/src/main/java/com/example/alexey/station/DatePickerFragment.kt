@@ -28,19 +28,11 @@ open class DatePickerFragment() : DialogFragment(), DatePickerDialog.OnDateSetLi
     private var mCallback: OnDatePickerListener? = null
 
 
-
-
     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
         mCallback = targetFragment as? OnDatePickerListener
         mCallback?.getDate("$p3:$p2:$p1")
     }
 
-
-    override fun onResume() {
-        setTargetFragment(fragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT), 3)
-        Log.i(TAG, "onResume" + targetFragment?.toString())
-        super.onResume()
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
