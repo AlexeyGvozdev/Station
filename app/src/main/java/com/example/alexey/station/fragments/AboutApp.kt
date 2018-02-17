@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +43,7 @@ class AboutApp : Fragment() {
         val view = inflater!!.inflate(R.layout.fragment_about_app, container, false)
         val tv_version1 = view.findViewById<TextView>(R.id.tv_version)
         tv_version1.text = BuildConfig.VERSION_NAME
+        Log.d("FRAG", "fssdfgjhkl;jhgfsdxcgvb")
 
         return view
     }

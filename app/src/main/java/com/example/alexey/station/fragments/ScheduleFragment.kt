@@ -26,7 +26,7 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
     override fun getDate(strDate: String) {
         setTextAndShow(tv_station_date, strDate)
     }
-    
+
 
     val TAG = "FRAGM"
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -41,8 +41,11 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         btn_choose_station_from.setOnClickListener( { openListStationActivity(REQUEST_CODE_STATION_FROM) } )
         btn_choose_station_in.setOnClickListener( { openListStationActivity(REQUEST_CODE_STATION_IN) } )
         btn_choose_date.setOnClickListener { showDatePickerDialog() }
-        Log.d(TAG, "onCreateView" + this.toString() + ": id = " + id)
+        Log.d(TAG, "onCreateView")
+        var text: String = savedInstanceState?.getCharSequence(KEY_STATION_IN)?.toString() ?: ""
+//        if(text.isNotEmpty()) setTextAndShow(tv_station_in, text)
 
+        Log.d(TAG, text + " : " + "" + text.length)
         retainInstance = true
         return view
     }
@@ -79,6 +82,7 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         textView.visibility = View.VISIBLE
     }
 
+
     private fun openListStationActivity(requestCode: Int) {
         val intent = Intent(activity, ListStationActivity::class.java)
         intent.putExtra(REQUEST_CODE_STRING, requestCode)
@@ -90,6 +94,19 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         val TAG_SCHEDULE_FRAGMENT = "ScheduleFragment"
     }
 
+    val KEY_STATION_IN: String = "station in"
+    val KEY_STATION_FROM: String = "station from"
+    val KEY_DATE: String = "date"
+    override fun onSaveInstanceState(outState: Bundle?) {
+        if (tv_station_in.visibility == View.VISIBLE) outState?.putCharSequence(KEY_STATION_IN, tv_station_in.text)
+        if (tv_station_from.visibility == View.VISIBLE) outState?.putCharSequence(KEY_STATION_FROM, tv_station_from.text)
+        if (tv_station_date.visibility == View.VISIBLE) outState?.putCharSequence(KEY_DATE, tv_station_date.text)
+        Log.d(TAG, "onSave")
+        super.onSaveInstanceState(outState)
+    }
 
-
+//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+//        super.onViewStateRestored(savedInstanceState)
+//
+//    }
 }

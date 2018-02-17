@@ -33,7 +33,6 @@ open class DatePickerFragment() : DialogFragment(), DatePickerDialog.OnDateSetLi
     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
         mCallback = targetFragment as? OnDatePickerListener
         mCallback?.getDate("$p3:$p2:$p1")
-        Log.d("TAG", targetFragment?.tag?.toString() +  "sgfsdf ")
     }
 
 

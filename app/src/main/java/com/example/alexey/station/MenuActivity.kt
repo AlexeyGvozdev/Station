@@ -2,6 +2,8 @@ package com.example.alexey.station
 
 import android.app.Fragment
 import android.os.Bundle
+import android.os.Handler
+import android.os.PersistableBundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -17,6 +19,7 @@ import java.io.IOException
 import java.io.InputStream
 import com.example.alexey.station.ListStationActivity.Companion.NUMBER_ELEMENT_MENU_NAV
 import com.example.alexey.station.fragments.ScheduleFragment.Companion.TAG_SCHEDULE_FRAGMENT
+import java.lang.Thread.sleep
 
 
 class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -34,21 +37,25 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(this)
 
         val resultFromListStationActivity = intent.getIntExtra(NUMBER_ELEMENT_MENU_NAV, 0)
-
-        nav_view.menu.getItem(resultFromListStationActivity).isChecked = true
-        onNavigationItemSelected(nav_view.menu.getItem(resultFromListStationActivity))
-
-//        val start = System.currentTimeMillis()
-//// поиск смысла жизни ...
-//        val finish = System.currentTimeMillis()
-//        Log.d(TAG, getStringFromAssetFile().subSequence(0,20).toString())
-//        val timeConsumedMillis = finish - start
-//        Log.d(TAG, timeConsumedMillis.toString())
+        nav_view.setNavigationItemSelectedListener(this)
+        if(savedInstanceState == null) {
+            nav_view.menu.getItem(resultFromListStationActivity).isChecked = true
+            onNavigationItemSelected(nav_view.menu.getItem(resultFromListStationActivity))
+        }
+    }
 
 
+    val key = "intrffghffgffggfd"
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        Log.d(TAG, "Activity save state" + outState?.getInt(key))
+        super.onSaveInstanceState(outState, outPersistentState)
+
+        outState?.putInt(key, when (nav_view.menu.getItem(0).isCheckable) {
+            true -> 2
+            else -> 1
+        })
 
     }
 
@@ -86,9 +93,6 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.schedule -> {
                 fragment = ScheduleFragment()
-                val bundle = Bundle()
-                bundle.putString("JSON", getStringFromAssetFile())
-                fragment.arguments = bundle
                 tagFragment = TAG_SCHEDULE_FRAGMENT
 
 
@@ -100,28 +104,12 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         fTran.replace(R.id.my_container, fragment, tagFragment).commit()
         title = item.toString()
-        Log.d(TAG, item.toString() + " : " + title)
+//        Log.d(TAG, item.toString() + " : " + title)
 
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun getStringFromAssetFile(): String {
-        val text = "allStations.json"
-        var buffer: ByteArray? = null
-        val inputStream: InputStream
-        try {
-            inputStream = assets.open(text)
-            val size = inputStream.available()
-            buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
 
-
-        return String(buffer!!)
-    }
 }
