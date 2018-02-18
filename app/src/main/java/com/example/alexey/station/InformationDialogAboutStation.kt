@@ -13,9 +13,7 @@ import com.example.alexey.station.model.Station
 import kotlinx.android.synthetic.main.info_about_station.*
 
 
-/**
- * Created by alexey on 17.02.18.
- */
+
 class InformationDialogAboutStation: DialogFragment() {
 
 

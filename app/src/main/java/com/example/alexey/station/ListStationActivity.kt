@@ -1,6 +1,8 @@
 package com.example.alexey.station
 
 import android.app.Activity
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -12,7 +14,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import com.example.alexey.station.model.DataAboutStations
 import com.example.alexey.station.model.Station
 import com.google.gson.Gson
@@ -24,8 +25,6 @@ import kotlinx.android.synthetic.main.app_bar_menu.*
 import kotlinx.android.synthetic.main.content_list_station.*
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
-import java.util.concurrent.Callable
 import kotlin.collections.ArrayList
 
 class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -55,6 +54,8 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
     val TAG = "MYTAG"
     var requestCodeFromFragment: Int = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_station)
@@ -65,30 +66,56 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-
+        recycler_view.adapter = adapter
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.setHasFixedSize(true)
+        requestCodeFromFragment = intent.getIntExtra(REQUEST_CODE_STRING,0)
+        readAssets(false)
 
 
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    private fun readAssets(restart: Boolean) {
+
+        val callback: LoaderManager.LoaderCallbacks<List<Station>> = StationCallback()
+        if (restart) {
+            supportLoaderManager.restartLoader(1, Bundle.EMPTY, callback)
+        } else {
+            supportLoaderManager.initLoader(1, Bundle.EMPTY, callback)
+        }
+    }
+
+    inner class StationCallback() : LoaderManager.LoaderCallbacks<List<Station>> {
+        override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<List<Station>> = StationReadLoader(this@ListStationActivity, requestCodeFromFragment)
+
+        override fun onLoadFinished(loader: Loader<List<Station>>?, data: List<Station>?) { showStation(data) }
+
+        override fun onLoaderReset(p0: Loader<List<Station>>?) {  }
+
+    }
+
+    private fun showStation(listStation: List<Station>?) {
+        Log.d(TAG, listStation.toString())
+        progress.visibility = View.GONE
+        adapter.setListStations(listStation ?: return)
     }
 
     override fun onResume() {
         super.onResume()
 
 
-        recycler_view.adapter = adapter
-        recycler_view.layoutManager = LinearLayoutManager(this)
-        recycler_view.setHasFixedSize(true)
 
-        val intentFromFragment = intent
-        requestCodeFromFragment = intentFromFragment.getIntExtra(REQUEST_CODE_STRING,0)
 
-        Observable.fromCallable { parseSTRJSON(getStringFromAssetFile()) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { fillRecyclerView(it)},
-                        { onEror(it)}
-                )
+
+
+//        Observable.fromCallable { parseSTRJSON(getStringFromAssetFile()) }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        { fillRecyclerView(it)},
+//                        { onEror(it)}
+//                )
 
     }
 

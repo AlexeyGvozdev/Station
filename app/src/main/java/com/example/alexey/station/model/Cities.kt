@@ -1,8 +1,6 @@
 package com.example.alexey.station.model
 
-/**
- * Created by alexey on 11.02.18.
- */
+
 data class Cities(val countryTitle: String,
              val point: PointClass,
              val districtTitle: String,

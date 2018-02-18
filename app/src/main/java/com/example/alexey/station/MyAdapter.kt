@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.alexey.station.model.Station
 
-/**
- * Created by alexey on 14.02.18.
- */
+
 class MyAdapter(private val listener: (Station) -> Unit,
                 private val longListener: (Station) -> Unit) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 

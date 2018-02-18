@@ -2,9 +2,7 @@ package com.example.alexey.station.model
 
 import java.io.Serializable
 
-/**
- * Created by alexey on 11.02.18.
- */
+
 data class Station(val countryTitle: String,
                val point: PointClass,
                val districtTitle: String,
