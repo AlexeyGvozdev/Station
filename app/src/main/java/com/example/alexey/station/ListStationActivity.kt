@@ -36,7 +36,14 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     )
 
     private fun showInformationAboutStation(station: Station) {
-        Toast.makeText(this, station.stationTitle, Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, station.stationTitle, Toast.LENGTH_SHORT).show()
+
+        val dialog = InformationDialogAboutStation()
+        val bundle: Bundle = Bundle()
+        bundle.putSerializable(KEY_STATION, station)
+        dialog.arguments = bundle
+
+        dialog.show(fragmentManager, "info")
     }
 
     private fun returnSelectedStation(station: Station) {
@@ -169,6 +176,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     }
 
     companion object {
+        const val KEY_STATION = "Key station"
         const val REQUEST_CODE_STRING = "RequestCode"
         const val REQUEST_CODE_STATION_IN = 2
         const val REQUEST_CODE_STATION_FROM = 1

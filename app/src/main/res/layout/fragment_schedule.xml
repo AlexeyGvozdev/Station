@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:text="text"
         android:visibility="gone"
+        android:layout_marginLeft="5dp"
         android:layout_below="@id/btn_choose_station_from"/>
 
     <TextView
@@ -42,6 +43,7 @@
         android:layout_height="wrap_content"
         android:text="text"
         android:visibility="gone"
+        android:layout_alignLeft="@+id/tv_station_from"
         android:layout_below="@id/btn_choose_station_in"/>
 
     <TextView
@@ -50,6 +52,7 @@
         android:layout_height="wrap_content"
         android:text="text"
         android:visibility="gone"
+        android:layout_alignLeft="@+id/tv_station_from"
         android:layout_below="@id/btn_choose_date"/>
 
 </RelativeLayout>

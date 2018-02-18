@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <TextView
+        android:id="@+id/tv_info_base_name_station"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/blackText"
+        android:textSize="@dimen/text_size_paragraph_info_dialog"
+        android:text="Название станции:"/>
+
+    <TextView
+        android:id="@+id/tv_info_name_station"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_value_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_base_name_station"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+    <TextView
+        android:id="@+id/tv_info_base_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Страна:"
+        android:textSize="@dimen/text_size_paragraph_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_name_station"
+        android:layout_alignStart="@id/tv_info_name_station"/>
+
+    <TextView
+        android:id="@+id/tv_info_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_value_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_base_country"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+   <TextView
+        android:id="@+id/tv_info_base_region"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Регион:"
+        android:textSize="@dimen/text_size_paragraph_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_country"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+    <TextView
+        android:id="@+id/tv_info_region"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_value_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_base_region"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+
+
+   <TextView
+        android:id="@+id/tv_info_base_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Город:"
+        android:textSize="@dimen/text_size_paragraph_info_dialog"
+        android:textColor="@color/blackText"
+        android:layout_below="@id/tv_info_region"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+    <TextView
+        android:id="@+id/tv_info_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_info_base_city"
+        android:textColor="@color/blackText"
+        android:textSize="@dimen/text_size_value_info_dialog"
+        android:layout_alignStart="@id/tv_info_base_name_station"/>
+
+
+
+</RelativeLayout>
