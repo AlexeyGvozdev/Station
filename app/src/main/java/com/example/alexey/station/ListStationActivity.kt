@@ -10,6 +10,8 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -29,16 +31,19 @@ import kotlin.collections.ArrayList
 
 class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val TAG = "MYTAG"
+    private var requestCodeFromFragment: Int = 0
+    private var listStation: List<Station> = emptyList()
+
     private val adapter = MyAdapter(
             { returnSelectedStation(it) },
             { showInformationAboutStation(it) }
     )
 
     private fun showInformationAboutStation(station: Station) {
-//        Toast.makeText(this, station.stationTitle, Toast.LENGTH_SHORT).show()
 
         val dialog = InformationDialogAboutStation()
-        val bundle: Bundle = Bundle()
+        val bundle = Bundle()
         bundle.putSerializable(KEY_STATION, station)
         dialog.arguments = bundle
 
@@ -52,15 +57,16 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         finish()
     }
 
-    val TAG = "MYTAG"
-    var requestCodeFromFragment: Int = 0
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_station)
 
+        requestCodeFromFragment = intent.getIntExtra(REQUEST_CODE_STRING,0)
+        initUI()
+        readAssets(false)
+    }
 
+    private fun initUI() {
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -69,12 +75,30 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         recycler_view.adapter = adapter
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.setHasFixedSize(true)
-        requestCodeFromFragment = intent.getIntExtra(REQUEST_CODE_STRING,0)
-        readAssets(false)
 
+        et_search.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {  }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {  }
+            override fun onTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Если ничего не введено, то выводим полный список фильмов
+
+                if (charSequence.toString().isEmpty()) {
+                    adapter.setListStations(listStation)
+                } else {
+                    val customListStation: ArrayList<Station> = ArrayList()
+                    for (station in listStation) {
+                        if (station.stationTitle.toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                            customListStation.add(station)
+                        }
+                    }
+                    adapter.setListStations(customListStation)
+                }
+            }
+        })
 
         nav_view.setNavigationItemSelectedListener(this)
     }
+
 
     private fun readAssets(restart: Boolean) {
 
@@ -98,47 +122,10 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     private fun showStation(listStation: List<Station>?) {
         Log.d(TAG, listStation.toString())
         progress.visibility = View.GONE
+        this.listStation = listStation ?: emptyList()
         adapter.setListStations(listStation ?: return)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-
-
-
-
-
-//        Observable.fromCallable { parseSTRJSON(getStringFromAssetFile()) }
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                        { fillRecyclerView(it)},
-//                        { onEror(it)}
-//                )
-
-    }
-
-    private fun onEror(err: Throwable?) {
-        Log.d(TAG, err.toString())
-    }
-
-    private fun fillRecyclerView(data: DataAboutStations?) {
-        val listStations : ArrayList<Station> = ArrayList<Station>()
-        if(data == null ) return
-
-        when (requestCodeFromFragment) {
-            REQUEST_CODE_STATION_FROM -> {
-                data.citiesFrom.flatMapTo(listStations) { it.stations }
-            }
-            REQUEST_CODE_STATION_IN -> {
-                data.citiesTo.flatMapTo(listStations) { it.stations }
-            }
-        }
-
-        adapter.setListStations(listStations)
-        progress.visibility = View.GONE
-    }
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
@@ -185,23 +172,6 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         return true
     }
 
-    private fun getStringFromAssetFile(): String {
-        val text = "allStations.json"
-        var buffer: ByteArray? = null
-        val inputStream: InputStream
-        try {
-            inputStream = assets.open(text)
-            val size = inputStream.available()
-            buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        return String(buffer!!)
-    }
-
     companion object {
         const val KEY_STATION = "Key station"
         const val REQUEST_CODE_STRING = "RequestCode"
@@ -209,14 +179,6 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         const val REQUEST_CODE_STATION_FROM = 1
         const val NUMBER_ELEMENT_MENU_NAV = "NumberElementMenuNav"
         const val SELECTED_STATION = "SelectedStation"
-    }
-
-
-    private fun parseSTRJSON(strJSON: String): DataAboutStations {
-        val index = strJSON.indexOf("\"citiesTo\"")
-        Log.d(TAG, strJSON.subSequence(index, index+10).toString())
-        val gson = Gson()
-        return gson.fromJson(strJSON,DataAboutStations::class.java)
     }
 }
 
