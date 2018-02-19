@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.alexey.station.DatePickerFragment
 import com.example.alexey.station.ListStationActivity
 import com.example.alexey.station.ListStationActivity.Companion.SELECTED_STATION
 import com.example.alexey.station.ListStationActivity.Companion.REQUEST_CODE_STATION_FROM
@@ -22,18 +21,15 @@ import kotlinx.android.synthetic.main.fragment_schedule.*
 
 class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
 
-
-    override fun getDate(strDate: String) {
-        setTextAndShow(tv_station_date, strDate)
-    }
-
-
     val TAG = "FRAGM"
+
+    /*
+    * Вешаем обработчик нажатия на кнопки
+    * */
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_schedule, container, false)
-
 
         val btn_choose_station_from = view.findViewById<View>(R.id.btn_choose_station_from)
         val btn_choose_station_in = view.findViewById<View>(R.id.btn_choose_station_in)
@@ -43,7 +39,6 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         btn_choose_date.setOnClickListener { showDatePickerDialog() }
         Log.d(TAG, "onCreateView")
 
-        retainInstance = true
         return view
     }
 
@@ -87,14 +82,13 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         startActivityForResult(intent, requestCode)
     }
 
-    companion object {
-        val SELECTED_DATE = "SelectedDate"
-        val TAG_SCHEDULE_FRAGMENT = "ScheduleFragment"
-    }
+    private val KEY_STATION_IN: String = "station in"
+    private val KEY_STATION_FROM: String = "station from"
+    private val KEY_DATE: String = "date"
 
-    val KEY_STATION_IN: String = "station in"
-    val KEY_STATION_FROM: String = "station from"
-    val KEY_DATE: String = "date"
+    /*
+    * При повороте экрана сохраняем данные
+    * */
     override fun onSaveInstanceState(outState: Bundle?) {
         if (tv_station_in.visibility == View.VISIBLE) outState?.putCharSequence(KEY_STATION_IN, tv_station_in.text)
         if (tv_station_from.visibility == View.VISIBLE) outState?.putCharSequence(KEY_STATION_FROM, tv_station_from.text)
@@ -103,6 +97,9 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
         super.onSaveInstanceState(outState)
     }
 
+    /*
+    * Восстонавливаем данные
+    * */
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         var text: String = savedInstanceState?.getCharSequence(KEY_STATION_IN)?.toString() ?: ""
@@ -114,5 +111,14 @@ class ScheduleFragment : Fragment(), DatePickerFragment.OnDatePickerListener {
 
         Log.d(TAG, text + " : " + "" + text.length)
 
+    }
+
+    // Метод вызываемый из диалога выбора даты
+    override fun getDate(strDate: String) {
+        setTextAndShow(tv_station_date, strDate)
+    }
+
+    companion object {
+        val TAG_SCHEDULE_FRAGMENT = "ScheduleFragment"
     }
 }

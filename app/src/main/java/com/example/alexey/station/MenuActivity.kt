@@ -46,18 +46,7 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-
-    val key = "intrffghffgffggfd"
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        Log.d(TAG, "Activity save state" + outState?.getInt(key))
-        super.onSaveInstanceState(outState, outPersistentState)
-
-        outState?.putInt(key, when (nav_view.menu.getItem(0).isCheckable) {
-            true -> 2
-            else -> 1
-        })
-
-    }
+    
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {

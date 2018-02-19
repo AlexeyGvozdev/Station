@@ -16,17 +16,11 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.example.alexey.station.model.DataAboutStations
+import com.example.alexey.station.fragments.InformationDialogAboutStation
 import com.example.alexey.station.model.Station
-import com.google.gson.Gson
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_list_station.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
 import kotlinx.android.synthetic.main.content_list_station.*
-import java.io.IOException
-import java.io.InputStream
 import kotlin.collections.ArrayList
 
 class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +34,10 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
             { showInformationAboutStation(it) }
     )
 
+    /*
+    * Метод вызывается при долгом нажатии на элемент списка
+    * Открывает диалог с данными о станции
+    */
     private fun showInformationAboutStation(station: Station) {
 
         val dialog = InformationDialogAboutStation()
@@ -49,7 +47,10 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
         dialog.show(fragmentManager, "info")
     }
-
+    /*
+    * Метод вызывается при клике на элемент списка
+    * Возвращяет в ScheduleFragment название выбранной станции
+    * */
     private fun returnSelectedStation(station: Station) {
         val intent = Intent()
         intent.putExtra(SELECTED_STATION, station.stationTitle)
@@ -63,7 +64,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
         requestCodeFromFragment = intent.getIntExtra(REQUEST_CODE_STRING,0)
         initUI()
-        readAssets(false)
+        readAssets()
     }
 
     private fun initUI() {
@@ -80,7 +81,7 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
             override fun afterTextChanged(p0: Editable?) {  }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {  }
             override fun onTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // Если ничего не введено, то выводим полный список фильмов
+                // Если ничего не введено, то выводим полный список станций
 
                 if (charSequence.toString().isEmpty()) {
                     adapter.setListStations(listStation)
@@ -99,15 +100,12 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         nav_view.setNavigationItemSelectedListener(this)
     }
 
-
-    private fun readAssets(restart: Boolean) {
-
+    /*
+    * Метод запускает инициализацию лоадера
+    * */
+    private fun readAssets() {
         val callback: LoaderManager.LoaderCallbacks<List<Station>> = StationCallback()
-        if (restart) {
-            supportLoaderManager.restartLoader(1, Bundle.EMPTY, callback)
-        } else {
-            supportLoaderManager.initLoader(1, Bundle.EMPTY, callback)
-        }
+        supportLoaderManager.initLoader(1, Bundle.EMPTY, callback)
     }
 
     inner class StationCallback() : LoaderManager.LoaderCallbacks<List<Station>> {
@@ -120,7 +118,6 @@ class ListStationActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     }
 
     private fun showStation(listStation: List<Station>?) {
-        Log.d(TAG, listStation.toString())
         progress.visibility = View.GONE
         this.listStation = listStation ?: emptyList()
         adapter.setListStations(listStation ?: return)

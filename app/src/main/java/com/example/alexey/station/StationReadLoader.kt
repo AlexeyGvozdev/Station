@@ -3,16 +3,15 @@ package com.example.alexey.station
 import android.content.Context
 import android.support.v4.content.Loader;
 import android.util.Log
-import android.view.View
 import com.example.alexey.station.model.DataAboutStations
 import com.example.alexey.station.model.Station
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.content_list_station.*
 import java.io.IOException
 import java.io.InputStream
+import java.util.*
 
 
 class StationReadLoader(context: Context, private val requestCodeList: Int) : Loader<List<Station>>(context) {
@@ -36,11 +35,12 @@ class StationReadLoader(context: Context, private val requestCodeList: Int) : Lo
     override fun onForceLoad() {
         super.onForceLoad()
 
+        // Асинхронное чтение строки json из файла, и парсинг строки json в объект
         Observable.fromCallable { Gson().fromJson(strJSON,DataAboutStations::class.java) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        { fillRecyclerView(it)},
+                        { returnListStation(it)},
                         { onErr(it)}
                 )
     }
@@ -49,14 +49,17 @@ class StationReadLoader(context: Context, private val requestCodeList: Int) : Lo
         Log.d("MYTAG", err.toString())
         deliverResult(null)
     }
-
-    private fun fillRecyclerView(data: DataAboutStations?) {
+    /*
+    * Метод возвращяет в активити список станций в зависимости от ключа
+    * */
+    private fun returnListStation(data: DataAboutStations?) {
         val listStations : ArrayList<Station> = ArrayList<Station>()
-        Log.d("MYTAG", requestCodeList.toString())
+
         if(data == null ) {
             deliverResult(null)
             return
         }
+
         when (requestCodeList) {
             ListStationActivity.REQUEST_CODE_STATION_FROM -> {
                 data.citiesFrom.flatMapTo(listStations) { it.stations }
@@ -65,9 +68,27 @@ class StationReadLoader(context: Context, private val requestCodeList: Int) : Lo
                 data.citiesTo.flatMapTo(listStations) { it.stations }
             }
         }
+        Collections.sort(listStations, {
+            o1,o2 -> compareList(o1, o2)
+        })
         deliverResult(listStations)
     }
 
+    /*
+    * Метод возвращающий условие сортировки
+    * Если страны одинаковые, то будут сравниваться города
+    * Иначе сравниваются страны
+    * */
+    private fun compareList(station1: Station, station2: Station): Int =
+            when (station1.countryTitle.equals(station2.countryTitle)) {
+                true -> station1.cityTitle.compareTo(station2.cityTitle)
+                false -> station1.countryTitle.compareTo(station2.countryTitle)
+        }
+
+
+    /*
+    * Читаем данные из файла
+    */
     private fun getStringFromAssetFile(context: Context): String {
         val text = "allStations.json"
         var buffer: ByteArray? = null

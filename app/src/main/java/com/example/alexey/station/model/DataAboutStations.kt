@@ -1,5 +1,12 @@
 package com.example.alexey.station.model
 
 
-data class DataAboutStations(val citiesFrom: List<Cities>,
-           val citiesTo: List<Cities>)
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+
+
+open class DataAboutStations{
+//    @PrimaryKey var id: Int = 0
+    var citiesFrom: List<City> = emptyList()
+    var citiesTo: List<City> = emptyList()
+}

@@ -17870,7 +17870,7 @@
           },
           "districtTitle" : "",
           "cityId" : 2352,
-          "cityTitle" : "город Вена",
+          "cityTitle" : "город МВена",
           "regionTitle" : "",
           "stationId" : 9864,
           "stationTitle" : "Stadion Center, Engerthstr. 242"
@@ -17883,13 +17883,13 @@
           },
           "districtTitle" : "",
           "cityId" : 2352,
-          "cityTitle" : "город Вена",
+          "cityTitle" : "город ЫВена",
           "regionTitle" : "",
           "stationId" : 9778,
           "stationTitle" : "Stadion Center, Olympiaplatz 2"
         },
         {
-          "countryTitle" : "Австрия",
+          "countryTitle" : "ААвстрия",
           "point" : {
             "longitude" : 16.36879539489746,
             "latitude" : 48.20253753662109
@@ -17902,14 +17902,14 @@
           "stationTitle" : "U-BHF ERDBERGSTR."
         },
         {
-          "countryTitle" : "Австрия",
+          "countryTitle" : "ААвстрия",
           "point" : {
             "longitude" : 16.36879539489746,
             "latitude" : 48.20253753662109
           },
           "districtTitle" : "",
           "cityId" : 2352,
-          "cityTitle" : "город Вена",
+          "cityTitle" : "город ВВена",
           "regionTitle" : "",
           "stationId" : 874,
           "stationTitle" : "Vienna"

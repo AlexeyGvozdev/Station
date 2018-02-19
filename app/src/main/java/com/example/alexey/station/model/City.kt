@@ -1,7 +1,7 @@
 package com.example.alexey.station.model
 
 
-data class Cities(val countryTitle: String,
+data class City(val countryTitle: String,
              val point: PointClass,
              val districtTitle: String,
              val cityId: Int,

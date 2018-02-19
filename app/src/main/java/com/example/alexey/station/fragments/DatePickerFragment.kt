@@ -1,20 +1,10 @@
-package com.example.alexey.station
+package com.example.alexey.station.fragments
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.DialogFragment
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.TextView
-import com.example.alexey.station.fragments.ScheduleFragment
-import com.example.alexey.station.fragments.ScheduleFragment.Companion.SELECTED_DATE
-import com.example.alexey.station.fragments.ScheduleFragment.Companion.TAG_SCHEDULE_FRAGMENT
 
 import java.util.*
 
@@ -24,13 +14,10 @@ open class DatePickerFragment() : DialogFragment(), DatePickerDialog.OnDateSetLi
     interface OnDatePickerListener {
         fun getDate(strDate: String)
     }
-    val TAG = "FRAGM"
-    private var mCallback: OnDatePickerListener? = null
-
 
     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
-        mCallback = targetFragment as? OnDatePickerListener
-        mCallback?.getDate("$p3:$p2:$p1")
+        //Вызываем метод getDate() в SchedulerFragment
+        (targetFragment as? OnDatePickerListener)?.getDate("$p3.${p2+1}.$p1")
     }
 
 

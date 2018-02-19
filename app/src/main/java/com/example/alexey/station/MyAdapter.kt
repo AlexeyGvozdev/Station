@@ -12,7 +12,6 @@ class MyAdapter(private val listener: (Station) -> Unit,
                 private val longListener: (Station) -> Unit) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
 
-    private lateinit var onclicklistener : View.OnClickListener
     private var listStations: List<Station> = emptyList()
 
     fun setListStations(list: List<Station>) {

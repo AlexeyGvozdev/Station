@@ -12,4 +12,3 @@ data class Station(val countryTitle: String,
                val stationId: Int,
                val stationTitle: String) : Serializable
 
-data class PointClass(val longitude: Double, val latitude: Double): Serializable
