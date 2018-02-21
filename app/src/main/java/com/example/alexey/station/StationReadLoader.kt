@@ -9,6 +9,8 @@ import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
@@ -36,13 +38,30 @@ class StationReadLoader(context: Context, private val requestCodeList: Int) : Lo
         super.onForceLoad()
 
         // Асинхронное чтение строки json из файла, и парсинг строки json в объект
-        Observable.fromCallable { Gson().fromJson(strJSON,DataAboutStations::class.java) }
+        Observable.fromCallable { parseStringJson(strJSON, requestCodeList) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { returnListStation(it)},
                         { onErr(it)}
                 )
+    }
+
+    /*
+    * Парсинг не всей json строки, а только той, что нужно
+    * */
+    private fun parseStringJson(strJSON: String, requestCodeList: Int): DataAboutStations {
+
+        var jsonObject = JSONObject(strJSON)
+        val strListKey = when (requestCodeList) {
+            ListStationActivity.REQUEST_CODE_STATION_FROM -> "citiesFrom"
+            ListStationActivity.REQUEST_CODE_STATION_IN -> "citiesTo"
+            else -> ""
+        }
+        val cities: JSONArray = jsonObject.getJSONArray(strListKey)
+        jsonObject = JSONObject()
+        jsonObject.put(strListKey, cities)
+        return Gson().fromJson(jsonObject.toString(),DataAboutStations::class.java)
     }
 
     private fun onErr(err: Throwable?) {
